@@ -25,3 +25,27 @@ body {
     text-wrap: balance;
   }
 }
+.logo-container {
+  display: flex;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  margin-left: 150px;
+  margin-top: 20px;
+}
+
+.logo-container img {
+  height: 50px;
+  margin-right: 10px;
+}
+
+.logo-container .logo-text {
+  font-weight: bold;
+  font-size: 36px;
+  color: #FF7F27;
+}
+
+#search {
+  display: inline-flex;
+
+}
+
