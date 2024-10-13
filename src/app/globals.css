@@ -48,4 +48,62 @@ body {
   display: inline-flex;
 
 }
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 10px; /* Adds space between items */
+  justify-content: space-evenly; /* Space between items */
+  width: 100%;
+  margin: 0 auto;
+  overflow-y: auto; /* Enable scrolling vertically when content exceeds the height */
+  scroll-behavior: auto;
+}
 
+.file-card {
+  flex: 1 1 calc(33% - 20px); /* Ensures each item takes 33% of the container width, minus spacing */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #203040; /* Light background for contrast */
+  margin-bottom: 0px;
+}
+
+.file-card:hover {
+  transform: translateY(-5px);
+}
+
+.file-icon {
+  width: 50px;
+  height: 50px;
+  color: #888; /* Subtle color for icons */
+  margin-bottom: 10px;
+}
+
+.file-name {
+  margin-bottom: 10px;
+  font-size: 14px;
+  text-align: center;
+  word-break: break-word; /* Ensure long file names wrap properly */
+}
+
+.download-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.download-button:hover {
+  background-color: #0056b3;
+}
+
+.files-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 0;
+}

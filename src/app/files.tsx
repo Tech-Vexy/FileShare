@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getPinataFiles } from '@/utils/config';
-import { Dialog } from '@headlessui/react';
-import { XIcon } from '@heroicons/react/solid';
+import { DocumentIcon, VideoCameraIcon } from '@heroicons/react/outline';
+import ImageIcon from '@mui/icons-material/Image';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import DownloadIcon from '@mui/icons-material/Download';
 
 const FilesPage = () => {
     const [files, setFiles] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
-    const [filePreview, setFilePreview] = useState<string | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchFiles = async () => {
@@ -29,43 +28,62 @@ const FilesPage = () => {
         fetchFiles();
     }, [page]);
 
-    const filteredFiles = files.filter((file) =>
-        file.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
-    const handleOpenPreview = (fileUrl: string) => {
-        setFilePreview(fileUrl);
-        setIsModalOpen(true);
+    const handleDownload = (fileUrl: string, fileName: string) => {
+        const link = document.createElement('a');
+        link.target = "_blank"
+        link.href = fileUrl;
+        link.download = fileName;
+        link.click();
+    };
+    const getFileIcon = (fileName: string | undefined) => {
+        if (!fileName) return <DocumentIcon className="w-6 h-6 text-gray-400" />;
+
+        const fileExtension = fileName.split('.').pop()?.toLowerCase();
+        switch (fileExtension) {
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+            case 'gif':
+                return <ImageIcon className="w-6 h-6 text-blue-500" />;
+            case 'pdf':
+                return <PictureAsPdfIcon className="w-6 h-6 text-red-500" />;
+            case 'mp4':
+            case 'avi':
+            case 'mkv':
+                return <VideoCameraIcon className="w-6 h-6 text-green-500" />;
+            case 'doc':
+            case 'docx':
+            case 'txt':
+                return <DocumentIcon className="w-6 h-6 text-gray-500" />;
+            default:
+                return <DocumentIcon className="w-6 h-6 text-gray-400" />;
+        }
     };
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="min-h-screen container mx-auto p-4">
             <h1 className="text-3xl font-bold mb-4">Uploaded Files</h1>
-
-            <input
-                type="text"
-                placeholder="Search for a fle or files"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="border p-2 mb-4 w-full rounded"
-            />
 
             {loading ? (
                 <div className="flex justify-center">
                     <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-blue-500"></div>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredFiles.map((file) => (
-                        <div key={file.ipfsHash} className="bg-white shadow-md rounded-lg p-4">
-                            <div className="truncate text-black">{file.name || 'Untitled File'}</div>
-                            <p className="text-sm text-gray-600">Size: {file.size} bytes</p>
-                            <p className="text-sm text-gray-600">Uploaded: {file.date}</p>
+                <div className="grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-4 w-full h-[80vh] p-4">
+                    {files.map((file) => (
+                        <div key={file.ipfsHash} className="bg-gray-800 p-6 rounded-lg text-center flex flex-col justify-between items-center">
+                            <div className="file-icon mb-4">
+                                {getFileIcon(file.fileName)}
+                            </div>
+                            <div className="file-name text-white mb-2">
+                                {file.fileName || "Unknown File"}
+                            </div>
                             <button
-                                onClick={() => handleOpenPreview(`https://gateway.pinata.cloud/ipfs/${file.ipfsHash}`)}
-                                className="mt-2 bg-blue-500 text-white px-3 py-1 rounded-lg text-sm"
+                                onClick={() => handleDownload(`https://gateway.pinata.cloud/ipfs/${file.ipfsHash}`, file.fileName)}
+                                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg flex items-center"
                             >
-                                Preview
+                                <DownloadIcon />
                             </button>
                         </div>
                     ))}
@@ -75,26 +93,20 @@ const FilesPage = () => {
             {error && <p className="text-red-500 mt-4">{error}</p>}
 
             <div className="flex justify-between mt-4">
-                <button onClick={() => setPage(page > 1 ? page - 1 : 1)} className="p-2 bg-blue-500 text-white rounded">
+                <button
+                    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={page === 1}
+                    className="p-2 bg-gray-300 text-gray-700 rounded-lg"
+                >
                     Previous
                 </button>
-                <button onClick={() => setPage(page + 1)} className="p-2 bg-blue-500 text-black rounded">
+                <button
+                    onClick={() => setPage((prev) => prev + 1)}
+                    className="p-2 bg-blue-500 text-white rounded-lg"
+                >
                     Next
                 </button>
             </div>
-
-
-            <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-50">
-                <div className="fixed inset-0 bg-black bg-opacity-30"></div>
-                <div className="fixed inset-0 flex items-center justify-center p-4">
-                    <Dialog.Panel className="bg-white p-6 rounded-lg shadow-lg max-w-lg mx-auto">
-                        <button onClick={() => setIsModalOpen(false)} className="absolute top-3 right-3">
-                            <XIcon className="h-6 w-6 text-gray-500" />
-                        </button>
-                        <img src={filePreview || ''} alt="File preview" className="w-full h-auto" />
-                    </Dialog.Panel>
-                </div>
-            </Dialog>
         </div>
     );
 };
