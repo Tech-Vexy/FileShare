@@ -5,13 +5,13 @@ import ImageIcon from '@mui/icons-material/Image';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import DownloadIcon from '@mui/icons-material/Download';
 
-interface File {
+type PinataFile = {
     ipfsHash: string;
     fileName: string;
-}
+};
 
-const FilesPage: React.FC = () => {
-    const [files, setFiles] = useState<File[]>([]);
+const FilesPage = () => {
+    const [files, setFiles] = useState<PinataFile[]>([]); // Use specific type instead of any[]
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState(1);
@@ -23,8 +23,8 @@ const FilesPage: React.FC = () => {
             try {
                 const fetchedFiles = await getPinataFiles(page);
                 setFiles(fetchedFiles);
-            } catch (error) {
-                setError(`Failed to fetch files. Please try again. ${error}`);
+            } catch (err: unknown) {
+                setError(`Failed to fetch files. Please try again. ${err instanceof Error ? err.message : ''}`);
             } finally {
                 setLoading(false);
             }
@@ -50,9 +50,9 @@ const FilesPage: React.FC = () => {
             case 'jpeg':
             case 'png':
             case 'gif':
-                return <ImageIcon className="w-6 h-6 text-blue-500" />;
+                return <ImageIcon fontSize="large" style={{ color: '#3b82f6' }} />;
             case 'pdf':
-                return <PictureAsPdfIcon className="w-6 h-6 text-red-500" />;
+                return <PictureAsPdfIcon fontSize="large" style={{ color: '#ef4444' }} />;
             case 'mp4':
             case 'avi':
             case 'mkv':

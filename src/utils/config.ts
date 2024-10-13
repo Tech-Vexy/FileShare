@@ -2,8 +2,8 @@
 import axios,{AxiosProgressEvent} from 'axios';
 
 // Use server-side environment variables instead of client-side
-const PINATA_API_KEY = process.env.PINATA_API_KEY;
-const PINATA_SECRET_API_KEY = process.env.PINATA_SECRET_API_KEY;
+const PINATA_API_KEY = process.env.NEXT_PUBLIC_PINATA_API_KEY;
+const PINATA_SECRET_API_KEY = process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY;
 
 const pinataHeaders = {
     pinata_api_key: PINATA_API_KEY,
