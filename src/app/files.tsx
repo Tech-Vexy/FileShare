@@ -5,8 +5,13 @@ import ImageIcon from '@mui/icons-material/Image';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import DownloadIcon from '@mui/icons-material/Download';
 
-const FilesPage = () => {
-    const [files, setFiles] = useState<any[]>([]);
+interface File {
+    ipfsHash: string;
+    fileName: string;
+}
+
+const FilesPage: React.FC = () => {
+    const [files, setFiles] = useState<File[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState(1);
@@ -19,7 +24,7 @@ const FilesPage = () => {
                 const fetchedFiles = await getPinataFiles(page);
                 setFiles(fetchedFiles);
             } catch (error) {
-                setError('Failed to fetch files. Please try again.');
+                setError(`Failed to fetch files. Please try again. ${error}`);
             } finally {
                 setLoading(false);
             }
@@ -28,14 +33,14 @@ const FilesPage = () => {
         fetchFiles();
     }, [page]);
 
-
     const handleDownload = (fileUrl: string, fileName: string) => {
         const link = document.createElement('a');
-        link.target = "_blank"
+        link.target = "_blank";
         link.href = fileUrl;
         link.download = fileName;
         link.click();
     };
+
     const getFileIcon = (fileName: string | undefined) => {
         if (!fileName) return <DocumentIcon className="w-6 h-6 text-gray-400" />;
 

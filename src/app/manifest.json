@@ -3,23 +3,23 @@
   "name": "FileShare",
   "icons": [
     {
-      "src": "icon16.png",
+      "src": "/icon16.png",
       "sizes": " 36x36 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "icon32.png",
+      "src": "/icon32.png",
       "type": "image/png",
       "sizes": "48x48"
     },
     {
-      "src": "icon192.png",
+      "src": "/icon192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
 
     {
-      "src": "icon512.png",
+      "src": "/icon512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

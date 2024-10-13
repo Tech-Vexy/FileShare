@@ -1,14 +1,20 @@
 import { useState } from 'react';
 import { uploadFileToPinata } from '@/utils/config'; // Ensure this handles multiple files
+import { AxiosProgressEvent } from 'axios'; // Import the AxiosProgressEvent type
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+type UploadedFile = {
+    IpfsHash: string;
+    name: string;
+};
 
 const UploadPage = () => {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
+    const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]); // Use explicit type
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedFiles(Array.from(e.target.files || []));
@@ -29,8 +35,8 @@ const UploadPage = () => {
 
         try {
             const uploadPromises = validFiles.map((file) =>
-                uploadFileToPinata(file, (progressEvent: ProgressEvent) => {
-                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                uploadFileToPinata(file, (progressEvent: AxiosProgressEvent) => {
+                    const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1)); // Handle possible undefined total
                     setUploadProgress((prevProgress) => ({
                         ...prevProgress,
                         [file.name]: percentCompleted,
@@ -40,8 +46,8 @@ const UploadPage = () => {
 
             const results = await Promise.all(uploadPromises);
             setUploadedFiles(results); // Store uploaded file metadata (like IPFS hash)
-        } catch (error) {
-            setError('Failed to upload files. Please try again.');
+        } catch (err) {
+            setError(err + 'Failed to upload files. Please try again.');
         } finally {
             setUploading(false);
         }
